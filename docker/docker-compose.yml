@@ -25,11 +25,18 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
   spark:
-    image: apache/spark:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
     container_name: spark
     depends_on:
       - kafka
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - AWS_REGION=${AWS_REGION}
     volumes:
       - ../consumer:/app/consumer
       - ../data:/app/data
