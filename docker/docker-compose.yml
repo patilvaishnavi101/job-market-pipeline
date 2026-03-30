@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   zookeeper:
@@ -34,3 +34,24 @@ services:
       - ../consumer:/app/consumer
       - ../data:/app/data
     working_dir: /app
+
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: airflow
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_FOLDER=/opt/airflow/dags
+      - RAPIDAPI_KEY=951618e0dbmsh6e82c20684c5df7p1cd79cjsn9d9f0a562bce
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../producer:/opt/airflow/producer
+      - ../data:/opt/airflow/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: standalone
